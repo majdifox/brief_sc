@@ -3,11 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="./css/output.css">
+    <title>briefV</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
-    
-    <script src="./js/script.js"></script>
+    <div class="relative w-full h-screen">
+        <!-- Background field image -->
+        <img src="./assets/img/field3.png" alt="Soccer Field" class="w-full h-full object-contain">
+
+        <!-- 4-4-2 Formation -->
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 grid grid-cols-4 gap-8 w-full max-w-7xl">
+            <!-- Goalkeeper -->
+            <div class="flex justify-center">
+                <img src="./assets/img/1_70_0.png" alt="Player" class="w-24 h-24">
+            </div>
+
+            <!-- Defenders -->
+            <div class="flex justify-center">
+                <img src="./assets/img/1_70_0.png" alt="Player" class="w-24 h-24">
+            </div>
+            <div class="flex justify-center">
+                <img src="./assets/img/1_70_0.png" alt="Player" class="w-24 h-24">
+            </div>
+            <div class="flex justify-center">
+                <img src="./assets/img/1_70_0.png" alt="Player" class="w-24 h-24">
+            </div>
+            <div class="flex justify-center">
+                <img src="./assets/img/1_70_0.png" alt="Player" class="w-24 h-24">
+            </div>
+
+            <!-- Midfielders -->
+            <div class="flex justify-center">
+                <img src="./assets/img/1_70_0.png" alt="Player" class="w-24 h-24">
+            </div>
+            <div class="flex justify-center">
+                <img src="./assets/img/1_70_0.png" alt="Player" class="w-24 h-24">
+            </div>
+            <div class="flex justify-center">
+                <img src="./assets/img/1_70_0.png" alt="Player" class="w-24 h-24">
+            </div>
+            <div class="flex justify-center">
+                <img src="./assets/img/1_70_0.png" alt="Player" class="w-24 h-24">
+            </div>
+
+            <!-- Forwards -->
+            <div class="flex justify-center">
+                <img src="./assets/img/1_70_0.png" alt="Player" class="w-24 h-24">
+            </div>
+            <div class="flex justify-center">
+                <img src="./assets/img/1_70_0.png" alt="Player" class="w-24 h-24">
+            </div>
+        </div>
+
+        
+        <div class="property-card">
+            <img src="./assets/img/1_70_0.png" alt="Modern House" class="property-image">
+            
+            <div class="property-details">
+                <h2 class="property-title">Maradona</h2>
+                <div class="property-location">
+                    Argentina
+                </div>
+                <div class="property-specs">
+                    <div class="property-info">Defence 97 </div>
+                    <div class="property-price">Haard</div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div onclick="addPlayers()" 
+          class="btnCB relative top-[270px] w-[270px] h-[440px] bg-cover bg-center bg-none p-4 z-[2] transition ease-in duration-200" 
+          style="background-image: url('./assets/img/1_70_0.png');" 
+          id="player-GK">
+          
+            
+
+          <div class="relative flex px-3 text-[#e9cc74]">
+            <div class="absolute leading-[1.5rem] font-light uppercase py-2 overflow-hidden">
+              <div class="text-base player-rating"></div>
+              <div class="text-xs player-position"><span>${player.position.slice(7)}</span></div>
+              <div class="block w-[1.2rem] h-[12px] my-1 player-nation">
+                <img src="${player.nationality}" alt="nationality" class="w-full h-full object-contain"/>
+              </div>
+              <div class="block w-[1.5rem] h-[25px] player-club">
+                <img src="${player.club}" alt="club" class="w-full h-full object-contain"/>
+              </div>
+            </div>
+            <div class="relative w-[90px] h-[90px] mx-auto overflow-hidden player-picture">
+              <img src="${player.photo}" alt="${player.name}" class="w-full h-full object-contain"/>
+            </div>
+          </div>
+          <div class="relative">
+            <div class="block px-1 text-[#e9cc74] w-[80%] mx-auto">
+              <div class="block text-center text-base uppercase pb-1">${player.name}</div>
+              <div class="flex justify-center my-1 player-features">
+                <div class="items-center border-r border-opacity-10 border-[#e9cc74] px-2">
+                  <span class="flex text-xs uppercase">
+                    <div class="mr-1 font-bold">${player.flag}</div>
+                    <div class="font-light">PAC</div>
+                  </span>
+                  <span class="flex text-xs uppercase">
+                    <div class="mr-1 font-bold">${player.dribbling
+                      }</div>
+                    <div class="font-light">SHO</div>
+                  </span>
+                  <span class="flex text-xs uppercase">
+                    <div class="mr-1 font-bold">${player.passing}</div>
+                    <div class="font-light">PAS</div>
+                  </span>
+                </div>
+                <div class="items-center px-2">
+                  <span class="flex text-xs uppercase">
+                    <div class="mr-1 font-bold">${player.dribbling}</div>
+                    <div class="font-light">DRI</div>
+                  </span>
+                  <span class="flex text-xs uppercase">
+                    <div class="mr-1 font-bold">${player.defending}</div>
+                    <div class="font-light">DEF</div>
+                  </span>
+                  <span class="flex text-xs uppercase">
+                    <div class="mr-1 font-bold">${player.physical}</div>
+                    <div class="font-light">PHY</div>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <h1 class="absolute w-[70px] h-[30px] bottom-[-60px] bg-[#1e1d1d] left-1/2 transform -translate-x-1/2 text-center text-white rounded-full">${player.position.slice(7)}</h1>
+          </div>
+
+          <svg width="100" height="100" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg" class="text-green-700 relative left-[62%] top-[27%] -translate-x-1/2">
+            <path d="M18.6275 41.711L18.3137 41.0298C18.1146 41.1215 17.8854 41.1215 17.6863 41.0298L17.3726 41.711L17.6863 41.0298L1.18627 33.4311C0.920355 33.3087 0.75 33.0427 0.75 32.7499V8.7248C0.75 8.42506 0.928458 8.15411 1.20383 8.03575L17.7038 0.943648C17.8929 0.862375 18.1071 0.862375 18.2962 0.943648L34.7962 8.03575C35.0715 8.15411 35.25 8.42506 35.25 8.7248V32.7499C35.25 33.0427 35.0796 33.3087 34.8137 33.4311L18.3137 41.0298L18.6275 41.711Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          </svg>
+      
+          <!-- Optionally, you can add a label showing the position -->
+        </div>
+
 </body>
 </html>
