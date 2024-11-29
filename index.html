@@ -42,6 +42,20 @@
             display: grid;
         }
 
+        #team-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Four columns */
+    grid-template-rows: repeat(5, 1fr);   /* Five rows */
+    gap: 10px;
+    height: 100%;
+}
+.player-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
         /* .player-card-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);

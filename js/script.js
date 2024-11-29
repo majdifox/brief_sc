@@ -22,6 +22,27 @@ document.addEventListener('DOMContentLoaded', () => {
     let selectedPlayers = [];
     const MAX_TEAM_SIZE = 11;
 
+    const POSITION_MAPPING = {
+        'CDM': ['DM', 'CM'],  // Allow CDM to map to both DM and CM
+        'CM': ['CM1', 'CM2'],
+        'CB': ['CB1', 'CB2'],
+        'GK': 'GK',
+        'ST': ['ST'],
+        'RW': ['RW'],
+        'LW': ['LW'],
+        'RB': ['RB'],
+        'LB': ['LB']
+    };
+
+    const fieldPositions = [
+        [null, null, null, null],
+        ['RW', null, 'RB', null],
+        [null, 'CM', 'CB', null],
+        ['ST', 'DM', null, 'GK'],
+        [null, 'CM', 'CB', null],
+        ['LW', null, 'LB', null]
+    ];
+
     // Fetch players data
     fetch('time.json')
         .then(response => response.json())
@@ -123,7 +144,6 @@ document.addEventListener('DOMContentLoaded', () => {
     positionFilter.addEventListener('change', renderSearchResults);
     clubFilter.addEventListener('change', renderSearchResults);
 
-    // Select player with team management
     function selectPlayer(event) {
         const playerId = event.target.getAttribute('data-player-id');
         const player = players.find(p => p.id === playerId);
@@ -132,19 +152,39 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Player not found');
             return;
         }
-
-        // Check if player is already in the team
-        if (selectedPlayers.some(p => p.id === playerId)) {
-            alert('This player is already in your team!');
+    
+        // Create a flexible position check with mapping
+        const isPositionTaken = (position) => {
+            // Map position to grid positions
+            const mappedPositions = Object.entries(POSITION_MAPPING)
+                .filter(([key, value]) => key.toLowerCase() === position.toLowerCase())
+                .map(([key, value]) => Array.isArray(value) ? value : [value]);
+    
+            // Flatten mapped positions
+            const flatMappedPositions = mappedPositions.flat();
+    
+            // Check if any of these positions are already filled
+            return flatMappedPositions.some(pos => 
+                selectedPlayers.some(p => {
+                    const playerPos = p.position.toLowerCase();
+                    const checkPos = pos.toLowerCase().replace(/\d+/, '');
+                    return playerPos === checkPos;
+                })
+            );
+        };
+    
+        // Check if a player of this position already exists
+        if (isPositionTaken(player.position)) {
+            alert(`You already have a player in the ${player.position} position!`);
             return;
         }
-
+    
         // Check team size limit
         if (selectedPlayers.length >= MAX_TEAM_SIZE) {
             alert(`You can only select ${MAX_TEAM_SIZE} players!`);
             return;
         }
-
+    
         // Add player to team
         selectedPlayers.push(player);
         saveSelectedTeam();
@@ -162,71 +202,82 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Team container not found');
             return;
         }
+    
+        // Clear existing team
+        teamContainer.innerHTML = "";
+    
+        // Create a 6x4 grid to match the layout
+    fieldPositions.forEach((row, rowIndex) => {
+        row.forEach((position, colIndex) => {
+            const cell = document.createElement('div');
+            cell.className = 'flex justify-center items-center';
+            
+            if (position) {
+                // Find a player for this position
+                let playerForPosition = null;
 
-        teamContainer.innerHTML = selectedPlayers.map((player, index) => `
-            <div class="relative player-team-card mt-32 gap-40">
-                <div class="btnCB relative w-[135px] h-[200px] bg-cover bg-center" 
-                     style="background-image: url('./assets/img/card.png');">
-                    <div class="relative flex px-1.5 text-[#e9cc74]">
-                        <div class="absolute leading-[0.75rem] font-light uppercase py-16 overflow-hidden left-[15px] top-[-12px]">
-                            <div class="text-xs player-rating">${player.rating}</div>
-                            <div class="text-[0.625rem] player-position"><span>${player.position}</span></div>
-                            <div class="block w-[0.6rem] h-[6px] my-0.5 player-nation">
-                                <img src="${player.flag}" alt="nationality" class="w-full h-full object-contain"/>
-                            </div>
-                            <div class="block w-[0.75rem] h-[12.5px] player-club">
-                                <img src="${player.logo}" alt="club" class="w-full h-full object-contain"/>
-                            </div>
-                        </div>
-                        <div class="relative w-[70px] h-[70px] mx-auto overflow-hidden player-picture bottom-[-25px]">
-                            <img src="${player.photo}" alt="${player.name}" class="w-full h-full object-contain relative "/>
-                        </div>
-                    </div>
-                    <div class="relative bottom-[-31px]">
-                        <div class="block px-0.5 text-[#e9cc74] w-[80%] mx-auto">
-                            <div class="block text-center text-xs uppercase pb-0.5">${player.name}</div>
-                            <div class="flex justify-center my-0.5 player-features">
-                                <div class="items-center border-r border-opacity-10 border-[#e9cc74] px-1">
-                                    <span class="flex text-[0.3rem] uppercase">
-                                        <div class="mr-0.5 font-bold">${player.pace}</div>
-                                        <div class="font-light">PAC</div>
-                                    </span>
-                                    <span class="flex text-[0.3rem] uppercase">
-                                        <div class="mr-0.5 font-bold">${player.shooting}</div>
-                                        <div class="font-light">SHO</div>
-                                    </span>
-                                    <span class="flex text-[0.3rem] uppercase">
-                                        <div class="mr-0.5 font-bold">${player.passing}</div>
-                                        <div class="font-light">PAS</div>
-                                    </span>
+                // Handle mapped positions
+                for (let [originalPos, mappedPos] of Object.entries(POSITION_MAPPING)) {
+                    // Handle both array and string mapped positions
+                    const positionMatches = Array.isArray(mappedPos) 
+                        ? mappedPos.includes(position)
+                        : position === mappedPos;
+                
+                    if (positionMatches) {
+                        playerForPosition = selectedPlayers.find(player => 
+                            player.position.toUpperCase() === originalPos.toUpperCase() ||
+                            // Add more flexible matching
+                            (originalPos === 'CDM' && ['CDM', 'DM', 'CM'].includes(player.position.toUpperCase()))
+                        );
+                    }
+                    
+                    if (playerForPosition) break;
+                }
+
+                if (playerForPosition) {
+                    cell.innerHTML = `
+                        <div class="relative player-team-card w-[135px] h-[200px] bg-cover bg-center" 
+                             style="background-image: url('./assets/img/card.png');">
+                            <div class="relative flex px-1.5 text-[#e9cc74]">
+                                <div class="absolute leading-[0.75rem] font-light uppercase py-16 overflow-hidden left-[15px] top-[-12px]">
+                                    <div class="text-xs player-rating">${playerForPosition.rating}</div>
+                                    <div class="text-[0.625rem] player-position"><span>${playerForPosition.position}</span></div>
+                                    <div class="block w-[0.6rem] h-[6px] my-0.5 player-nation">
+                                        <img src="${playerForPosition.flag}" alt="nationality" class="w-full h-full object-contain"/>
+                                    </div>
+                                    <div class="block w-[0.75rem] h-[12.5px] player-club">
+                                        <img src="${playerForPosition.logo}" alt="club" class="w-full h-full object-contain"/>
+                                    </div>
                                 </div>
-                                <div class="items-center px-1">
-                                    <span class="flex text-[0.3rem] uppercase">
-                                        <div class="mr-0.5 font-bold">${player.dribbling}</div>
-                                        <div class="font-light">DRI</div>
-                                    </span>
-                                    <span class="flex text-[0.3rem] uppercase">
-                                        <div class="mr-0.5 font-bold">${player.defending}</div>
-                                        <div class="font-light">DEF</div>
-                                    </span>
-                                    <span class="flex text-[0.3rem] uppercase">
-                                        <div class="mr-0.5 font-bold">${player.physical}</div>
-                                        <div class="font-light">PHY</div>
-                                    </span>
+                                <div class="relative w-[70px] h-[70px] mx-auto overflow-hidden player-picture bottom-[-25px]">
+                                    <img src="${playerForPosition.photo}" alt="${playerForPosition.name}" class="w-full h-full object-contain relative "/>
                                 </div>
                             </div>
+                            <div class="relative bottom-[-31px]">
+                                <div class="block px-0.5 text-[#e9cc74] w-[80%] mx-auto">
+                                    <div class="block text-center text-xs uppercase pb-0.5">${playerForPosition.name}</div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <button class="delete-player absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6"
-                            data-index="${index}">✖</button>
-                </div>
-            </div>
-        `).join('');
-
-        // Add delete player event listeners
-        document.querySelectorAll('.delete-player').forEach(btn => {
-            btn.addEventListener('click', deletePlayer);
+                    `;
+                }
+            }
+            
+            // Add the cell to the team container
+            teamContainer.appendChild(cell);
         });
+    });
+
+    
+        // Optional: Validation to ensure all required positions are filled
+        const requiredPositions = ['GK', 'RB', 'CB', 'LB', 'DM', 'CM', 'ST', 'RW', 'LW'];
+        const missingPositions = requiredPositions.filter(pos => 
+            !selectedPlayers.some(player => player.position === pos)
+        );
+    
+        if (missingPositions.length > 0) {
+            console.warn('Missing players for positions:', missingPositions);
+        }
     }
 
     // Delete player from team
@@ -335,8 +386,10 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     }
 
-    // Create player details HTML function
-    function createPlayerDetailsHTML(player) {
+    // For goalkeepers, modify the player details HTML to show goalkeeper-specific stats
+function createPlayerDetailsHTML(player) {
+    // Check if it's a goalkeeper
+    if (player.position.toLowerCase() === 'gk') {
         return `
             <div class="flex flex-col items-center mb-4">
                 <img src="${player.photo}" alt="${player.name}" class="w-32 h-32 object-contain mb-2">
@@ -352,14 +405,40 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <div class="grid grid-cols-3 gap-2">
                 ${createStatBar('Rating', player.rating)}
-                ${createStatBar('Pace', player.pace)}
-                ${createStatBar('Shooting', player.shooting)}
-                ${createStatBar('Passing', player.passing)}
-                ${createStatBar('Dribbling', player.dribbling)}
-                ${createStatBar('Defending', player.defending)}
-                ${createStatBar('Physical', player.physical)}
+                ${createStatBar('Diving', player.diving)}
+                ${createStatBar('Handling', player.handling)}
+                ${createStatBar('Kicking', player.kicking)}
+                ${createStatBar('Reflexes', player.reflexes)}
+                ${createStatBar('Speed', player.speed)}
+                ${createStatBar('Positioning', player.positioning)}
             </div>
         `;
+    }
+
+    // Original code for non-goalkeeper players
+    return `
+        <div class="flex flex-col items-center mb-4">
+            <img src="${player.photo}" alt="${player.name}" class="w-32 h-32 object-contain mb-2">
+            <h2 class="text-xl font-bold">${player.name}</h2>
+            <div class="flex items-center mb-2">
+                <img src="${player.flag}" alt="${player.nationality}" class="w-8 h-6 mr-2">
+                <span>${player.nationality}</span>
+            </div>
+            <div class="flex items-center mb-4">
+                <img src="${player.logo}" alt="${player.club}" class="w-8 h-8 mr-2">
+                <span>${player.club} - ${player.position}</span>
+            </div>
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+            ${createStatBar('Rating', player.rating)}
+            ${createStatBar('Pace', player.pace)}
+            ${createStatBar('Shooting', player.shooting)}
+            ${createStatBar('Passing', player.passing)}
+            ${createStatBar('Dribbling', player.dribbling)}
+            ${createStatBar('Defending', player.defending)}
+            ${createStatBar('Physical', player.physical)}
+        </div>
+    `;
 }
 
 // Confirmation button 
