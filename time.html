@@ -5,40 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Player Search Modal</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- ce style pour positionner le trrain -->
     <style>
         .ter {
-            /* background-image: url('./assets/img/field1v2.jpg'); */
             background-repeat: no-repeat;
             background-size: cover;
         }
-        .player-card-container {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
         
+        .bg {
+        background-image: url('./assets/img/field1.jpg'); 
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        height: 100vh;
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        grid-template-rows: repeat(5, 1fr);
+    }
 
-        .bg{
-            background-image: url(./assets/img/field1v2.jpg);
-            background-repeat: no-repeat;
-            height: 200vh;
-            width: 100%;
-            background-position: cover;
-            background-position: center;
+    .team-container {
+    display: grid;
+    grid-template-rows: repeat(6, 1fr);
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    /* other styling */
+}
+
+        .player-team-card {
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
     </style>
 </head>
 <body class="min-h-screen bg-cover bg-no-repeat relative ter">
     <div class="bg">
-        <div id="team-container" class="grid grid-cols-5 grid-rows-4 h-5/6 ">
+        <div id="team-container">
             <!-- Team players will be dynamically added here -->
         </div>
     </div>
+
+    <div id="formation-selector" class="absolute top-[80px] left-[10px] z-10 flex flex-col space-y-2">
+        <button id="formation-4-3-3" class="bg-white/70 hover:bg-white/90 p-2 rounded shadow formation-btn" data-formation="4-3-3">
+            4-3-3
+        </button>
+        <button id="formation-4-4-2" class="bg-white/70 hover:bg-white/90 p-2 rounded shadow formation-btn" data-formation="4-4-2">
+            4-4-2
+        </button>
+    </div>
+
+
     <div id="openModalBtn" class="absolute top-[10px] left-[10px] w-20 z-10 cursor-pointer hover:opacity-80 transition-opacity">
         <img src="./assets/img/logo.png" alt="Logo" class="w-full h-auto">
     </div>
@@ -58,6 +74,12 @@
 
             <!-- Search and Filters Container -->
             <div class="p-4 border-b">
+                <!-- Formation Selection -->
+                <!-- <select id="formationSelect" class="w-full p-2 border rounded mb-4">
+                    <option value="4-3-3">4-3-3 Formation</option>
+                    <option value="4-4-2">4-4-2 Formation</option>
+                </select> -->
+
                 <!-- Name Search Bar -->
                 <input 
                     type="text" 
@@ -118,12 +140,8 @@
             </div>
         </div>
     </div>
+      
 
-    <!-- <div id="player-GK" class="player-card-container"> -->
-        <!-- Player card will be dynamically populated here -->
-    <!-- </div> -->
-
-    
-    <script src="time.js"></script>
+    <script src="./js/script.js"></script>
 </body>
 </html>
