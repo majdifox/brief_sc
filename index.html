@@ -7,12 +7,42 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- ce style pour positionner le trrain -->
     <style>
-        .ter {
-            /* background-image: url('./assets/img/field1v2.jpg'); */
+      /* .ter {
+          background-repeat: no-repeat;
+          background-size: cover;
+      }
+      
+      .bg {
+      background-image: url('./assets/img/field1.jpg'); 
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      height: 100vh;
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(5, 1fr);
+  } */
+
+  .ter {
+          
             background-repeat: no-repeat;
             background-size: cover;
         }
-        .player-card-container {
+        
+        
+
+        .bg{
+            background-image: url(./assets/img/field1.jpg);
+            background-repeat: no-repeat;
+            background-size: cover;
+            height: 100vh;
+            width: 100%;
+            background-position: center;
+            display: grid;
+        }
+
+        /* .player-card-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
@@ -20,17 +50,7 @@
             bottom: 10px;
             left: 50%;
             transform: translateX(-50%);
-        }
-        
-
-        .bg{
-            background-image: url(./assets/img/field1v2.jpg);
-            background-repeat: no-repeat;
-            height: 200vh;
-            width: 100%;
-            background-position: cover;
-            background-position: center;
-        }
+        } */
     </style>
 </head>
 <body class="min-h-screen bg-cover bg-no-repeat relative ter">
@@ -39,6 +59,7 @@
             <!-- Team players will be dynamically added here -->
         </div>
     </div>
+    
     <div id="openModalBtn" class="absolute top-[10px] left-[10px] w-20 z-10 cursor-pointer hover:opacity-80 transition-opacity">
         <img src="./assets/img/logo.png" alt="Logo" class="w-full h-auto">
     </div>
@@ -124,6 +145,6 @@
     </div>
 
     
-    <script src="time.js"></script>
+    <script src="./js/script.js"></script>
 </body>
 </html>
