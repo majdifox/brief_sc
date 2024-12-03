@@ -481,21 +481,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Create stat bar helper function
-    function createStatBar(label, value) {
-        return `
-            <div>
-                <div class="flex justify-between mb-1">
-                    <span class="text-xs">${label}</span>
-                    <span class="text-xs font-bold">${value}</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div class="bg-blue-500 h-2 rounded-full" style="width: ${value}%"></div>
-                </div>
-            </div>
-        `;
-    }
-
     // For goalkeepers, modify the player details HTML to show goalkeeper-specific stats
  // Comprehensive player details HTML creator
 function createPlayerDetailsHTML(player) {
@@ -610,7 +595,6 @@ function createPlayerCardHTML(player) {
 // Confirmation button 
 confirmBtn.addEventListener('click', () => {
     if (selectedPlayers.length > 0) {
-        alert(`Team of ${selectedPlayers.length} players created!`);
         playerModal.classList.add('hidden');
     } else {
         alert('Please select at least one player.');
