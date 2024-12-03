@@ -398,12 +398,12 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTeam();
     }
 
-    // Save team to local storage
+    // Save the team to local storage
     function saveSelectedTeam() {
         localStorage.setItem('selectedTeam', JSON.stringify(selectedPlayers));
     }
 
-    // Load team from local storage
+    // Load the team from local storage
     function loadSelectedTeam() {
         const savedTeam = localStorage.getItem('selectedTeam');
         if (savedTeam) {
