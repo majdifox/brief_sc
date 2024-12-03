@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Get DOM elements
+
     const openModalBtn = document.getElementById('openModalBtn');
     const playerModal = document.getElementById('playerModal');
     const closeModal = document.getElementById('closeModal');
@@ -12,8 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const nationalityFilter = document.getElementById('nationalityFilter');
     const positionFilter = document.getElementById('positionFilter');
     const clubFilter = document.getElementById('clubFilter');
-    
-    // Player card element to show selected player
     const teamContainer = document.getElementById('team-container');
 
     // Player selection state
@@ -21,13 +19,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let selectedPlayers = [];
     const MAX_TEAM_SIZE = 11;
 
-const fieldPositions = [
-    [null, null, 'ST', null, null],
-    ['LW', 'CM1', null, 'CM2', 'RW'], 
-    [null, null, 'DM', null, null], 
-    ['LB', 'CB1', null, 'CB2', 'RB'], 
-    [null, null, 'GK', null, null]
-    ];
+    const fieldPositions = [
+        [null, null, 'ST', null, null],
+        ['LW', 'CM1', null, 'CM2', 'RW'], 
+        [null, null, 'DM', null, null], 
+        ['LB', 'CB1', null, 'CB2', 'RB'], 
+        [null, null, 'GK', null, null]
+        ];
 
     const POSITION_MAPPING = {
         'GK': ['GK'],
