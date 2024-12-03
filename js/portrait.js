@@ -307,25 +307,40 @@ console.log(nationalities)
                             `;
     
                         cell.innerHTML = `
+                            
                             <div class="relative player-team-card w-[135px] h-[200px] bg-cover bg-center" 
                                 style="background-image: url('./assets/img/card.png');">
                                 <div class="relative flex py-4 px-1.5 text-white">
+                                    
                                     <div class="absolute leading-[0.75rem] font-bold   uppercase py-16 overflow-hidden left-10 top-[-12px]">
+                                    
                                         <div class="text-lg text-yellow flex justify-center player-rating ">${playerForPosition.rating}</div>
+                                        
                                         <div class="text-[0.625rem] flex justify-center font-bold player-position"><span>${playerForPosition.position}</span></div>
+                                        
+                                        
                                         <div class="block w-10 h-10 my-0.5 player-nation">
+                                        
                                             <img src="${playerForPosition.flag}" alt="nationality" class="w-full h-full object-contain"/>
                                         </div>
                                         <div class="block w-10 h-10 player-club">
                                             <img src="${playerForPosition.logo}" alt="club" class="w-full h-full object-contain"/>
                                         </div>
                                     </div>
+                                    
                                     <div class="relative w-60 h-60 mx-auto overflow-hidden player-picture bottom-[-25px]">
+                                    
                                         <img src="${playerForPosition.photo}" alt="${playerForPosition.name}" class="w-38 h-38 left-16 top-14 object-contain relative "/>
+                                         <button class="delete-player absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6" data-id="${playerForPosition.id}">✖</button>
+
                                     </div>
+                                    
                                 </div>
+
                                 <div class="relative  py-6   bottom-11">
+                                        
                                     <div class="block px-0.5 text-white w-[80%] mx-auto">
+                                        
                                         <div class="block text-center font-bold text-sm uppercase pb-0.5">${playerForPosition.name}</div>
                                         <div class="flex justify-center my-0.5 player-features">
                                             <div class="items-center border-r border-opacity-10 border-[#e9cc74] px-1">
@@ -334,6 +349,7 @@ console.log(nationalities)
                                             <div class="items-center px-1">
                                                 ${playerForPosition.position.toLowerCase() === 'gk' 
                                                     ? `
+                                                    
                                                     <span class="flex text-[0.3rem] uppercase">
                                                         <div class="mr-0.5 text-[#e9cc74] font-bold">${playerForPosition.kicking}</div>
                                                         <div class="font-light">KIC</div>
@@ -346,6 +362,7 @@ console.log(nationalities)
                                                         <div class="mr-0.5 font-bold">${playerForPosition.positioning}</div>
                                                         <div class="font-light">POS</div>
                                                     </span>
+                                                    
                                                     `
                                                     : `
                                                     <span class="flex text-[0.3rem] uppercase">
@@ -359,6 +376,7 @@ console.log(nationalities)
                                                     <span class="flex text-[0.3rem] uppercase">
                                                         <div class="mr-0.5 font-bold">${playerForPosition.physical}</div>
                                                         <div class="font-light">PHY</div>
+                                                         
                                                     </span>
                                                 `}
                                             </div>
@@ -366,6 +384,8 @@ console.log(nationalities)
                                     </div>
                                 </div>
                             </div>
+                           
+
                         `;
                     }
                 }
@@ -391,20 +411,7 @@ console.log(nationalities)
 
     // New function to delete a player from the team
 
-    function deletePlayerFromTeam(event) {
-        const playerId = event.target.getAttribute('data-id');
-        const position = event.target.getAttribute('data-position');
     
-        // Remove the player from selectedPlayers
-        const playerIndex = selectedPlayers.findIndex(p => p.id === playerId);
-        if (playerIndex !== -1) {
-            selectedPlayers.splice(playerIndex, 1);
-        }
-    
-        // Save and re-render the team
-        saveSelectedTeam();
-        renderTeam();
-    }
 
     // Save team to local storage
     function saveSelectedTeam() {
