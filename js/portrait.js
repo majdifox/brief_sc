@@ -411,7 +411,20 @@ console.log(nationalities)
 
     // New function to delete a player from the team
 
+    function deletePlayerFromTeam(event) {
+        const playerId = event.target.getAttribute('data-id');
+        const position = event.target.getAttribute('data-position');
     
+        // // Remove the player from selectedPlayers
+        // const playerIndex = selectedPlayers.findIndex(p => p.id === playerId);
+        // if (playerIndex !== -1) {
+        //     selectedPlayers.splice(playerIndex, 1);
+        // }
+    
+        // Save and re-render the team
+        // saveSelectedTeam();
+        // renderTeam();
+    }
 
     // Save team to local storage
     function saveSelectedTeam() {
