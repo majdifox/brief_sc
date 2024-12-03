@@ -422,8 +422,8 @@ console.log(nationalities)
         }
     
         // Save and re-render the team
-        // saveSelectedTeam();
-        // renderTeam();
+        saveSelectedTeam();
+        renderTeam();
     }
 
     // Save team to local storage
