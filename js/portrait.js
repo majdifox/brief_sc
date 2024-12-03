@@ -472,7 +472,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     }
 
-    // Load selected player from local storage
+    // Load players from local storage after selection 
     function loadSelectedPlayer() {
         const savedPlayer = localStorage.getItem('selectedPlayer');
         if (savedPlayer) {
