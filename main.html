@@ -3,83 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Player Search Modal</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- ce style pour positionner le trrain -->
+    <title>Soccer Team Formation</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-      /* .ter {
-          background-repeat: no-repeat;
-          background-size: cover;
-      }
-      
-      .bg {
-      background-image: url('./assets/img/field1.jpg'); 
-      background-repeat: no-repeat;
-      background-size: cover;
-      background-position: center;
-      height: 100vh;
-      width: 100%;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: repeat(5, 1fr);
-  } */
-
-  .mainbackground {
-          
+        .mainbackground {
             background-repeat: no-repeat;
             background-size: cover;
         }
         
-        
-
-        .bg{
-            background-image: url(./assets/img/field1.jpg);
+        .bg {
+            background-image: url(./assets/img/field.jpg); /* Update with a portrait field image */
             background-repeat: no-repeat;
             background-size: cover;
-            height: 100vh;
             width: 100%;
             background-position: center;
             display: grid;
         }
-
+        @media (max-width:860PX) {
+           .bg{
+            width: 305%;
+           } 
+        }
+        @media (max-width:413PX) {
+           .bg{
+            width: 315%;
+           } 
+        }
         #team-container {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr); /* Four columns */
-    grid-template-rows: repeat(7, 1fr);   /* Five rows */
-    gap: 10px;
-    height: 100%;
-}
-.player-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-        /* .player-card-container {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(5, 1fr); 
+            grid-template-rows: repeat(5, 1fr);   
+            /* grid-template-columns: repeat(4, 1fr); 
+            grid-template-rows: repeat(5, 1fr);    */
             gap: 10px;
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-        } */
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .player-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* .player-club img {
+    width: 15px !important;
+    height: 15px !important;
+    object-fit: contain;
+} */
     </style>
 </head>
 <body class="min-h-screen bg-cover bg-no-repeat relative mainbackground">
     <div class="bg">
-        <div id="team-container" class="grid grid-cols-5 grid-rows-4 h-5/6 ">
+        <div id="team-container" class="grid grid-cols-5 grid-rows-5 w-full h-full">
             <!-- Team players will be dynamically added here -->
         </div>
     </div>
-    
+
     <div id="openModalBtn" class="absolute top-[10px] left-[10px] w-20 z-10 cursor-pointer hover:opacity-80 transition-opacity">
         <img src="./assets/img/logo.png" alt="Logo" class="w-full h-auto">
     </div>
   
     <!-- Modal Container -->
-    <div id="playerModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex justify-center items-center">
+    <div id="playerModal" class="inset-0 bg-black bg-opacity-50 z-50 hidden -top-36 my-32 justify-center items-center ">
         <div class="bg-white rounded-lg w-[600px] max-h-[90vh] flex flex-col">
             <!-- Modal Header -->
             <div class="bg-gray-100 p-4 flex justify-between items-center rounded-t-lg">
@@ -157,8 +145,7 @@
     <div id="player-GK" class="player-card-container">
         <!-- Player card will be dynamically populated here -->
     </div>
-
     
-    <script src="./js/script.js"></script>
+    <script src="js/portrait.js"></script>
 </body>
 </html>

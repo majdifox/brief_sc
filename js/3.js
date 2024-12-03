@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const clubFilter = document.getElementById('clubFilter');
     
     // Player card element to show selected player
-    const playerCardContainer = document.getElementById('player-GK');
     const teamContainer = document.getElementById('team-container');
 
     // Player selection state
@@ -22,39 +21,46 @@ document.addEventListener('DOMContentLoaded', () => {
     let selectedPlayers = [];
     const MAX_TEAM_SIZE = 11;
 
-    const fieldPositions = [
-        [null, 'RW', null, null, 'RB', null, null],
-        [null, null, 'CM1', null, null, 'CB1', null],
-        ['ST', null, null, 'DM', null, null, 'GK'],
-        [null, null, 'CM2', null, null, 'CB2', null],
-        [null, 'LW', null, null, 'LB', null, null]
-    ];
+       // Updated field positions for 4-3-3 formation
+    //    const fieldPositions = [
+    //     ['LW', null, 'ST', null, 'RW'], 
+    //     [null, 'CM1', 'DM', 'CM2', null], 
+    //     ['LB', 'CB1', null, 'CB2', 'RB'], 
+    //     [null, null, 'GK', null, null]
+    // ];
+//     const fieldPositions = [
+//         [null, null, 'ST', null, null],
+//         ['LW', null, null, null, 'RW'], 
+//         [null, 'CM1', null, 'CM2', null], 
+//         [null, null, 'DM', null, null], 
+//         ['LB', null, null, null, 'RB'], 
+//         [null, 'CB1', null, 'CB2', null], 
+//         [null, null, 'GK', null, null]
+//     ];
+
+const fieldPositions = [
+    [null, null, 'ST', null, null],
+    ['LW', 'CM1', null, 'CM2', 'RW'], 
+    [null, null, 'DM', null, null], 
+    ['LB', 'CB1', null, 'CB2', 'RB'], 
+    [null, null, 'GK', null, null]
+    ];
+
     const POSITION_MAPPING = {
         'GK': ['GK'],
         'CDM': ['DM', 'CDM'],
-        'CM': ['CM', 'CM1', 'CM2'],
-        'CB': ['CB', 'CB1', 'CB2'],
-        'ST': ['ST'],
+        'CM': ['CM'],
+        'CM1': ['CM1'],
+        'CM2': ['CM2'],
+        'CB': ['CB'],
+        'CB1': ['CB1'],
+        'CB2': ['CB2'],
+        'ST': ['ST', 'CF'],
         'RW': ['RW', 'RWF', 'RM'],
         'LW': ['LW', 'LWF', 'LM'],
         'RB': ['RB', 'RWB'],
         'LB': ['LB', 'LWB']
     };
-    // Modify the position mapping to be more flexible
-    // const POSITION_MAPPING = {
-    //     'CDM': ['DM', 'CM'],
-    //     'CM1': ['CM1', 'CM'],
-    //     'CM2': ['CM2', 'CM'],
-    //     'CB1': ['CB1', 'CB'],
-    //     'CB2': ['CB2', 'CB'],
-    //     'GK': 'GK',
-    //     'ST': ['ST'],
-    //     'RW': ['RW'],
-    //     'LW': ['LW'],
-    //     'RB': ['RB'],
-    //     'LB': ['LB'],
-    //     'DM': ['DM', 'CDM']
-    // };
 
     // Fetch players data
     fetch('time.json')
@@ -68,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .catch(error => console.error('Error loading players:', error));
 
     // Populate filter dropdowns
-    function populateFilters() {
+function populateFilters() {
         const nationalities = [...new Set(players.map(p => p.nationality))].sort();
         nationalityFilter.innerHTML = `
             <option value="">All Nationalities</option>
@@ -94,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     }
 
+
     // Open modal
     openModalBtn.addEventListener('click', () => {
         playerModal.classList.remove('hidden');
@@ -102,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Close modal
-    closeModal.addEventListener('click', () => {
+    closeModal.addEventListener('click', () => {    
         playerModal.classList.add('hidden');
     });
 
@@ -158,44 +165,55 @@ document.addEventListener('DOMContentLoaded', () => {
         const playerId = event.target.getAttribute('data-player-id');
         const player = players.find(p => p.id === playerId);
         
-        if (!player) {
-            console.error('Player not found');
-            return;
-        }
+        // if (!player) {
+        //     console.error('Player not found');
+        //     return;
+        // }
     
         // Advanced position conflict check
         const isPositionTaken = (playerPosition) => {
-            const basePosition = Object.keys(POSITION_MAPPING).find(base => 
-                POSITION_MAPPING[base].includes(playerPosition)
-            );
-    
+            // Specific checks for CM and CB
             const specificPositionGroups = {
-                'CB': ['CB1', 'CB2'],
-                'CM': ['CM1', 'CM2']
+                'CM': ['CM1', 'CM2'],
+                'CB': ['CB1', 'CB2']
             };
     
-            // Check for specific position groups
-            if (basePosition && specificPositionGroups[basePosition]) {
+            // Find the base position group
+            const basePosition = Object.keys(specificPositionGroups).find(base => 
+                specificPositionGroups[base].includes(playerPosition)
+            );
+    
+            if (basePosition) {
+                // If it's a CM or CB position, check more strictly
                 const existingPlayersInGroup = selectedPlayers.filter(p => 
-                    specificPositionGroups[basePosition].includes(p.position) ||
-                    p.position === basePosition
+                    specificPositionGroups[basePosition].includes(p.position)
                 );
-                return existingPlayersInGroup.length >= 2;
+    
+                // Prevent adding to the same group if there are already 2 players
+                if (existingPlayersInGroup.length >= 2) {
+                    return true;
+                }
+    
+                // Prevent adding the exact same player to multiple positions
+                if (existingPlayersInGroup.some(p => p.id === player.id)) {
+                    return true;
+                }
             }
     
-            // Check for direct conflicts in other positions
+            // General position conflict check
             return selectedPlayers.some(p => 
                 POSITION_MAPPING[p.position] && 
-                POSITION_MAPPING[p.position].includes(playerPosition)
+                POSITION_MAPPING[p.position].includes(playerPosition) &&
+                p.id !== player.id  // Allow same type of position only if it's a different player
             );
         };
     
         // Check if a player of this position already exists
         if (isPositionTaken(player.position)) {
-            alert(`You already have a player in a similar position to ${player.position}!`);
+            alert(`You cannot add this player to the specified position!`);
             return;
         }
-    
+
         // Check team size limit
         if (selectedPlayers.length >= MAX_TEAM_SIZE) {
             alert(`You can only select ${MAX_TEAM_SIZE} players!`);
@@ -223,27 +241,21 @@ document.addEventListener('DOMContentLoaded', () => {
     
         // Clear existing team
         teamContainer.innerHTML = "";
+
+        // Ensure the grid is set up correctly
+        teamContainer.className = 'grid grid-cols-4 grid-rows-5 h-full w-full';
     
-        // Precise grid layout with exact position requirements
-        const precisedFieldPositions = [
-            [null, 'RW', null, null, 'RB', null, null],
-            [null, null, 'CM1', null, null, 'CB1', null],
-            ['ST', null, null, 'DM', null, null, 'GK'],
-            [null, null, 'CM2', null, null, 'CB2', null],
-            [null, 'LW', null, null, 'LB', null, null]
-        ];
-    
-        // Mapping of desired positions to their variations
+        // Position mapping for precise player assignment
         const positionMap = {
             'RW': ['RW', 'RWF', 'RM'],
             'RB': ['RB', 'RWB'],
             'CM1': ['CM', 'CM1'],
+            'CM2': ['CM', 'CM2'],
             'CB1': ['CB', 'CB1'],
+            'CB2': ['CB', 'CB2'],
             'ST': ['ST', 'CF'],
             'DM': ['CDM', 'DM'],
             'GK': ['GK'],
-            'CM2': ['CM', 'CM2'],
-            'CB2': ['CB', 'CB2'],
             'LW': ['LW', 'LWF', 'LM'],
             'LB': ['LB', 'LWB']
         };
@@ -252,7 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const positionToPlayerMap = {};
     
         // First, assign players to their exact positions
-        precisedFieldPositions.forEach((row, rowIndex) => {
+        fieldPositions.forEach((row, rowIndex) => {
             row.forEach((desiredPosition, colIndex) => {
                 if (desiredPosition) {
                     const playerForPosition = selectedPlayers.find(player => {
@@ -271,7 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     
         // Render the grid
-        precisedFieldPositions.forEach((row, rowIndex) => {
+        fieldPositions.forEach((row, rowIndex) => {
             row.forEach((desiredPosition, colIndex) => {
                 const cell = document.createElement('div');
                 cell.className = 'flex justify-center items-center';
@@ -281,60 +293,64 @@ document.addEventListener('DOMContentLoaded', () => {
     
                     if (playerForPosition) {
                         cell.innerHTML = `
-                            <div class="relative player-team-card w-[135px] h-[200px] bg-cover bg-center" 
-                                 style="background-image: url('./assets/img/card.png');">
-                                <div class="relative flex px-1.5 text-[#e9cc74]">
-                                    <div class="absolute leading-[0.75rem] font-light uppercase py-16 overflow-hidden left-[15px] top-[-12px]">
-                                        <div class="text-xs player-rating">${playerForPosition.rating}</div>
-                                        <div class="text-[0.625rem] player-position"><span>${playerForPosition.position}</span></div>
-                                        <div class="block w-[0.6rem] h-[6px] my-0.5 player-nation">
-                                            <img src="${playerForPosition.flag}" alt="nationality" class="w-full h-full object-contain"/>
-                                        </div>
-                                        <div class="block w-[0.75rem] h-[12.5px] player-club">
-                                            <img src="${playerForPosition.logo}" alt="club" class="w-full h-full object-contain"/>
-                                        </div>
-                                    </div>
-                                    <div class="relative w-[70px] h-[70px] mx-auto overflow-hidden player-picture bottom-[-25px]">
-                                        <img src="${playerForPosition.photo}" alt="${playerForPosition.name}" class="w-full h-full object-contain relative "/>
-                                    </div>
+            <div class="btnCB relative w-full h-full bg-cover bg-center" style="background-image: url('./assets/img/card.png');">
+                        <div class="relative flex px-1.5 text-[#e9cc74] w-full h-full">
+                            <div class="absolute leading-[0.75rem] font-light uppercase py-16 overflow-hidden left-[15px] top-[-12px] w-full h-full">
+                                <div class="text-xs player-rating w-full h-full">${playerForPosition.rating}</div>
+                                <div class="text-[0.625rem] player-position w-full h-full"><span>${playerForPosition.position}</span></div>
+                                <div class="block w-full h-full my-0.5 player-nation ">
+                                    <img src="${playerForPosition.flag}" alt="nationality" class="w-full h-full object-contain"/>
                                 </div>
-                                <div class="relative bottom-[-31px]">
-                                    <div class="block px-0.5 text-[#e9cc74] w-[80%] mx-auto">
-                                        <div class="block text-center text-xs uppercase pb-0.5">${playerForPosition.name}</div>
-                                        <div class="flex justify-center my-0.5 player-features">
-                                            <div class="items-center border-r border-opacity-10 border-[#e9cc74] px-1">
-                                                <span class="flex text-[0.3rem] uppercase">
-                                                    <div class="mr-0.5 font-bold">${playerForPosition.pace}</div>
-                                                    <div class="font-light">PAC</div>
-                                                </span>
-                                                <span class="flex text-[0.3rem] uppercase">
-                                                    <div class="mr-0.5 font-bold">${playerForPosition.shooting}</div>
-                                                    <div class="font-light">SHO</div>
-                                                </span>
-                                                <span class="flex text-[0.3rem] uppercase">
-                                                    <div class="mr-0.5 font-bold">${playerForPosition.passing}</div>
-                                                    <div class="font-light">PAS</div>
-                                                </span>
-                                            </div>
-                                            <div class="items-center px-1">
-                                                <span class="flex text-[0.3rem] uppercase">
-                                                    <div class="mr-0.5 font-bold">${playerForPosition.dribbling}</div>
-                                                    <div class="font-light">DRI</div>
-                                                </span>
-                                                <span class="flex text-[0.3rem] uppercase">
-                                                    <div class="mr-0.5 font-bold">${playerForPosition.defending}</div>
-                                                    <div class="font-light">DEF</div>
-                                                </span>
-                                                <span class="flex text-[0.3rem] uppercase">
-                                                    <div class="mr-0.5 font-bold">${playerForPosition.physical}</div>
-                                                    <div class="font-light">PHY</div>
-                                                </span>
-                                            </div>
-                                        </div>
+                                <div class="block w-full h-full player-club">
+                                    <img src="${playerForPosition.logo}" alt="club" class="w-full h-full object-contain"/>
+                                </div>
+                            </div>
+                            <div class="relative w-full h-full mx-auto overflow-hidden player-picture bottom-[-25px]">
+                                <img src="${playerForPosition.photo}" alt="${playerForPosition.name}" class="w-full h-full object-contain relative "/>
+                            </div>
+                        </div>
+                        <div class="relative bottom-[-31px]">
+                            <div class="block px-0.5 text-[#e9cc74] w-full h-full mx-auto">
+                                <div class="block text-center text-xs uppercase pb-0.5">${playerForPosition.name}</div>
+                                <div class="flex justify-center my-0.5 player-features text-[0.4rem]">
+                                    <div class="items-center border-r border-opacity-10 border-[#e9cc74] px-1">
+                                        <span class="flex uppercase">
+                                            <div class="mr-0.5 font-bold">${playerForPosition.pace}</div>
+                                            <div class="font-light">PAC</div>
+                                        </span>
+                                        <span class="flex uppercase">
+                                            <div class="mr-0.5 font-bold">${playerForPosition.shooting}</div>
+                                            <div class="font-light">SHO</div>
+                                        </span>
+                                        <span class="flex uppercase">
+                                            <div class="mr-0.5 font-bold">${playerForPosition.passing}</div>
+                                            <div class="font-light">PAS</div>
+                                        </span>
+                                    </div>
+                                    <div class="items-center px-1">
+                                        <span class="flex uppercase">
+                                            <div class="mr-0.5 font-bold">${playerForPosition.dribbling}</div>
+                                            <div class="font-light">DRI</div>
+                                        </span>
+                                        <span class="flex uppercase">
+                                            <div class="mr-0.5 font-bold">${playerForPosition.defending}</div>
+                                            <div class="font-light">DEF</div>
+                                        </span>
+                                        <span class="flex uppercase">
+                                            <div class="mr-0.5 font-bold">${playerForPosition.physical}</div>
+                                            <div class="font-light">PHY</div>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
-                        `;
+                        </div>
+                        <button class="delete-player absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6" 
+                                data-id="${playerForPosition.id}" 
+                                data-position="${desiredPosition}">✖</button>
+                    </div>
+             `;
+                        
+                            
                     }
                 }
                 
@@ -343,22 +359,34 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     
-        // Optional: Validation to ensure specific positions are filled
+        // Optional validation to ensure specific positions are filled
         const requiredPositions = [
-            'RW', 'RB', 'CM1', 'CB1', 
-            'ST', 'DM', 'GK', 
-            'CM2', 'CB2', 'LW', 'LB'
+            'ST', 'LW', 'RW', 
+            'CM1', 'CM2', 'DM', 
+            'LB', 'RB', 'CB1', 'CB2', 'GK'
         ];
     
         const missingPositions = requiredPositions.filter(pos => !positionToPlayerMap[pos]);
-    
-
+        
+        document.querySelectorAll('.delete-player').forEach(button => {
+            button.addEventListener('click', deletePlayerFromTeam);
+        });
+  
     }
 
-    // Delete player from team
-    function deletePlayer(event) {
-        const index = event.target.getAttribute('data-index');
-        selectedPlayers.splice(index, 1);
+    // New function to delete a player from the team
+
+    function deletePlayerFromTeam(event) {
+        const playerId = event.target.getAttribute('data-id');
+        const position = event.target.getAttribute('data-position');
+    
+        // Remove the player from selectedPlayers
+        const playerIndex = selectedPlayers.findIndex(p => p.id === playerId);
+        if (playerIndex !== -1) {
+            selectedPlayers.splice(playerIndex, 1);
+        }
+    
+        // Save and re-render the team
         saveSelectedTeam();
         renderTeam();
     }
@@ -463,7 +491,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // For goalkeepers, modify the player details HTML to show goalkeeper-specific stats
  // Comprehensive player details HTML creator
- function createPlayerDetailsHTML(player) {
+function createPlayerDetailsHTML(player) {
     // Check if goalkeeper
     if (player.position.toLowerCase() === 'gk') {
         return `
@@ -479,27 +507,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span>${player.club} - ${player.position}</span>
                 </div>
                 <div class="grid grid-cols-2 gap-4 w-full max-w-md">
-                    <div>
-                        <strong>Rating:</strong> ${player.rating}
-                    </div>
-                    <div>
-                        <strong>Diving:</strong> ${player.diving}
-                    </div>
-                    <div>
-                        <strong>Handling:</strong> ${player.handling}
-                    </div>
-                    <div>
-                        <strong>Kicking:</strong> ${player.kicking}
-                    </div>
-                    <div>
-                        <strong>Reflexes:</strong> ${player.reflexes}
-                    </div>
-                    <div>
-                        <strong>Speed:</strong> ${player.speed}
-                    </div>
-                    <div>
-                        <strong>Positioning:</strong> ${player.positioning}
-                    </div>
+                    <div><strong>Rating:</strong> ${player.rating}</div>
+                    <div><strong>Diving:</strong> ${player.diving}</div>
+                    <div><strong>Handling:</strong> ${player.handling}</div>
+                    <div><strong>Kicking:</strong> ${player.kicking}</div>
+                    <div><strong>Reflexes:</strong> ${player.reflexes}</div>
+                    <div><strong>Speed:</strong> ${player.speed}</div>
+                    <div><strong>Positioning:</strong> ${player.positioning}</div>
                 </div>
             </div>
         `;
@@ -519,26 +533,67 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span>${player.club} - ${player.position}</span>
             </div>
             <div class="grid grid-cols-2 gap-4 w-full max-w-md">
-                <div>
-                    <strong>Rating:</strong> ${player.rating}
+                <div><strong>Rating:</strong> ${player.rating}</div>
+                <div><strong>Pace:</strong> ${player.pace}</div>
+                <div><strong>Shooting:</strong> ${player.shooting}</div>
+                <div><strong>Passing:</strong> ${player.passing}</div>
+                <div><strong>Dribbling:</strong> ${player.dribbling}</div>
+                <div><strong>Defending:</strong> ${player.defending}</div>
+                <div><strong>Physical:</strong> ${player.physical}</div>
+            </div>
+        </div>
+    `;
+}
+
+function createPlayerCardHTML(player) {
+    return `
+        <div class="relative flex px-1.5 text-[#e9cc74]">
+            <div class="absolute leading-[0.75rem] font-light uppercase py-16 overflow-hidden left-[15px] top-[-12px]">
+                <div class="text-xs player-rating">${player.rating}</div>
+                <div class="text-[0.625rem] player-position"><span>${player.position}</span></div>
+                <div class="block w-[0.6rem] h-[6px] my-0.5 player-nation">
+                    <img src="${player.flag}" alt="nationality" class="w-full h-full object-contain"/>
                 </div>
-                <div>
-                    <strong>Pace:</strong> ${player.pace}
+                <div class="block w-[0.75rem] h-[12.5px] player-club">
+                    <img src="${player.logo}" alt="club" class="w-full h-full object-contain"/>
                 </div>
-                <div>
-                    <strong>Shooting:</strong> ${player.shooting}
-                </div>
-                <div>
-                    <strong>Passing:</strong> ${player.passing}
-                </div>
-                <div>
-                    <strong>Dribbling:</strong> ${player.dribbling}
-                </div>
-                <div>
-                    <strong>Defending:</strong> ${player.defending}
-                </div>
-                <div>
-                    <strong>Physical:</strong> ${player.physical}
+            </div>
+            <div class="relative w-[70px] h-[70px] mx-auto overflow-hidden player-picture bottom-[-25px]">
+                <img src="${player.photo}" alt="${player.name}" class="w-full h-full object-contain relative "/>
+            </div>
+        </div>
+        <div class="relative bottom-[-31px]">
+            <div class="block px-0.5 text-[#e9cc74] w-[80%] mx-auto">
+                <div class="block text-center text-xs uppercase pb-0.5">${player.name}</div>
+                <div class="flex justify-center my-0.5 player-features">
+                    <div class="items-center border-r border-opacity-10 border-[#e9cc74] px-1">
+                        <span class="flex text-[0.3rem] uppercase">
+                            <div class="mr-0.5 font-bold">${player.pace}</div>
+                            <div class="font-light">PAC</div>
+                        </span>
+                        <span class="flex text-[0.3rem] uppercase">
+                            <div class="mr-0.5 font-bold">${player.shooting}</div>
+                            <div class="font-light">SHO</div>
+                        </span>
+                        <span class="flex text-[0.3rem] uppercase">
+                            <div class="mr-0.5 font-bold">${player.passing}</div>
+                            <div class="font-light">PAS</div>
+                        </span>
+                    </div>
+                    <div class="items-center px-1">
+                        <span class="flex text-[0.3rem] uppercase">
+                            <div class="mr-0.5 font-bold">${player.dribbling}</div>
+                            <div class="font-light">DRI</div> function renderTeam()
+                        </span>
+                        <span class="flex text-[0.3rem] uppercase">
+                            <div class="mr-0.5 font-bold">${player.defending}</div>
+                            <div class="font-light">DEF</div>
+                        </span>
+                        <span class="flex text-[0.3rem] uppercase">
+                            <div class="mr-0.5 font-bold">${player.physical}</div>
+                            <div class="font-light">PHY</div>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>

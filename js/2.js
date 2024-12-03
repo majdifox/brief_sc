@@ -23,12 +23,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const MAX_TEAM_SIZE = 11;
 
     const fieldPositions = [
-        [null, 'RW', null, null, 'RB', null, null],
-        [null, null, 'CM1', null, null, 'CB1', null],
-        ['ST', null, null, 'DM', null, null, 'GK'],
-        [null, null, 'CM2', null, null, 'CB2', null],
-        [null, 'LW', null, null, 'LB', null, null]
-    ];
+        [null, null, 'ST', null, null],
+        ['LW', 'CM1', null, 'CM2', 'RW'], 
+        [null, null, 'DM', null, null], 
+        ['LB', 'CB1', null, 'CB2', 'RB'], 
+        [null, null, 'GK', null, null]
+        ];
     const POSITION_MAPPING = {
         'GK': ['GK'],
         'CDM': ['DM', 'CDM'],
@@ -234,17 +234,19 @@ document.addEventListener('DOMContentLoaded', () => {
         ];
     
         // Mapping of desired positions to their variations
-        const positionMap = {
-            'RW': ['RW', 'RWF', 'RM'],
-            'RB': ['RB', 'RWB'],
-            'CM1': ['CM', 'CM1'],
-            'CB1': ['CB', 'CB1'],
-            'ST': ['ST', 'CF'],
-            'DM': ['CDM', 'DM'],
+        const POSITION_MAPPING = {
             'GK': ['GK'],
-            'CM2': ['CM', 'CM2'],
-            'CB2': ['CB', 'CB2'],
+            'CDM': ['DM', 'CDM'],
+            'CM': ['CM'],
+            'CM1': ['CM1'],
+            'CM2': ['CM2'],
+            'CB': ['CB'],
+            'CB1': ['CB1'],
+            'CB2': ['CB2'],
+            'ST': ['ST', 'CF'],
+            'RW': ['RW', 'RWF', 'RM'],
             'LW': ['LW', 'LWF', 'LM'],
+            'RB': ['RB', 'RWB'],
             'LB': ['LB', 'LWB']
         };
     
