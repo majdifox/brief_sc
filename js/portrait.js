@@ -53,8 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(error => console.error('Error loading players:', error));
 
-    // Populate filter dropdowns
-function populateFilters() {
+
+   
+    function populateFilters() {
         const nationalities = [...new Set(players.map(p => p.nationality))].sort();
         nationalityFilter.innerHTML = `
             <option value="">All Nationalities</option>
@@ -62,7 +63,7 @@ function populateFilters() {
                 <option value="${nationality}">${nationality}</option>
             `).join('')}
         `;
-console.log(nationalities)
+        console.log(nationalities)
         const positions = [...new Set(players.map(p => p.position))].sort();
         positionFilter.innerHTML = `
             <option value="">All Positions</option>
@@ -99,6 +100,7 @@ console.log(nationalities)
         searchResults.classList.remove('hidden');
     });
 
+
     // Render search results with filters
     function renderSearchResults() {
         const nameQuery = nameSearch.value.toLowerCase();
@@ -129,7 +131,7 @@ console.log(nationalities)
             </div>
         `).join('');
 
-        // Add click event to player images
+        // click event to player images
         document.querySelectorAll('.player-image').forEach(img => {
             img.addEventListener('click', selectPlayer);
         });
@@ -145,14 +147,7 @@ console.log(nationalities)
         const playerId = event.target.getAttribute('data-player-id');
         const player = players.find(p => p.id === playerId);
         
-        // if (!player) {
-        //     console.error('Player not found');
-        //     return;
-        // }
-    
-        // Advanced position conflict check
         const isPositionTaken = (playerPosition) => {
-            // Specific checks for CM and CB
             const specificPositionGroups = {
                 'CM': ['CM1', 'CM2'],
                 'CB': ['CB1', 'CB2']
@@ -164,31 +159,26 @@ console.log(nationalities)
             );
     
             if (basePosition) {
-                // If it's a CM or CB position, check more strictly
                 const existingPlayersInGroup = selectedPlayers.filter(p => 
                     specificPositionGroups[basePosition].includes(p.position)
                 );
     
-                // Prevent adding to the same group if there are already 2 players
                 if (existingPlayersInGroup.length >= 2) {
                     return true;
                 }
     
-                // Prevent adding the exact same player to multiple positions
                 if (existingPlayersInGroup.some(p => p.id === player.id)) {
                     return true;
                 }
             }
     
-            // General position conflict check
             return selectedPlayers.some(p => 
                 POSITION_MAPPING[p.position] && 
                 POSITION_MAPPING[p.position].includes(playerPosition) &&
-                p.id !== player.id  // Allow same type of position only if it's a different player
+                p.id !== player.id  
             );
         };
     
-        // Check if a player of this position already exists
         if (isPositionTaken(player.position)) {
             alert(`You cannot add this player to the specified position!`);
             return;
@@ -214,18 +204,12 @@ console.log(nationalities)
 
     // Create team display
     function renderTeam() {
-        if (!teamContainer) {
-            console.error('Team container not found');
-            return;
-        }
     
-        // Clear existing team
+       
         teamContainer.innerHTML = "";
     
-        // Ensure the grid is set up correctly
         teamContainer.className = 'grid grid-cols-4 grid-rows-5 h-full w-full';
     
-        // Position mapping for precise player assignment
         const positionMap = {
             'RW': ['RW', 'RWF', 'RM'],
             'RB': ['RB', 'RWB'],
@@ -240,10 +224,8 @@ console.log(nationalities)
             'LB': ['LB', 'LWB']
         };
     
-        // Create a mapping of exact positions to players
         const positionToPlayerMap = {};
     
-        // First, assign players to their exact positions
         fieldPositions.forEach((row, rowIndex) => {
             row.forEach((desiredPosition, colIndex) => {
                 if (desiredPosition) {
@@ -251,7 +233,7 @@ console.log(nationalities)
                         const matchedPositions = positionMap[desiredPosition];
                         return matchedPositions.some(pos => 
                             player.position.toUpperCase() === pos.toUpperCase() &&
-                            !positionToPlayerMap[desiredPosition]  // Ensure no duplicate assignments
+                            !positionToPlayerMap[desiredPosition]  
                         );
                     });
     
@@ -262,7 +244,6 @@ console.log(nationalities)
             });
         });
     
-        // Render the grid
         fieldPositions.forEach((row, rowIndex) => {
             row.forEach((desiredPosition, colIndex) => {
                 const cell = document.createElement('div');
@@ -272,7 +253,6 @@ console.log(nationalities)
                     const playerForPosition = positionToPlayerMap[desiredPosition];
     
                     if (playerForPosition) {
-                        // Dynamically render stats based on player position
                         const statsHtml = playerForPosition.position.toLowerCase() === 'gk' 
                             ? `
                                 <span class="flex text-[0.3rem] uppercase">
@@ -387,12 +367,10 @@ console.log(nationalities)
                     }
                 }
                 
-                // Add the cell to the team container
                 teamContainer.appendChild(cell);       
             });
         });
     
-        // Optional validation to ensure specific positions are filled
         const requiredPositions = [
             'ST', 'LW', 'RW', 
             'CM1', 'CM2', 'DM', 
@@ -406,19 +384,16 @@ console.log(nationalities)
         });
     }
 
-    // New function to delete a player from the team
-
+    // delete function
     function deletePlayerFromTeam(event) {
         const playerId = event.target.getAttribute('data-id');
         const position = event.target.getAttribute('data-position');
     
-        // Remove the player from selectedPlayers
         const playerIndex = selectedPlayers.findIndex(p => p.id === playerId);
         if (playerIndex !== -1) {
             selectedPlayers.splice(playerIndex, 1);
         }
     
-        // Save and re-render the team
         saveSelectedTeam();
         renderTeam();
     }
