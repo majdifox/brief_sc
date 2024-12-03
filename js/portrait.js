@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const clubFilter = document.getElementById('clubFilter');
     const teamContainer = document.getElementById('team-container');
 
-    // Player selection state
     let players = [];
     let selectedPlayers = [];
     const MAX_TEAM_SIZE = 11;
@@ -43,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'LB': ['LB', 'LWB']
     };
 
-    // Fetch players data
+    // Fetch players data from time.json
     fetch('time.json')
         .then(response => response.json())
         .then(data => {
