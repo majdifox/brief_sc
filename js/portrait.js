@@ -35,11 +35,11 @@ document.addEventListener('DOMContentLoaded', () => {
         'CB': ['CB'],
         'CB1': ['CB1'],
         'CB2': ['CB2'],
-        'ST': ['ST', 'CF'],
-        'RW': ['RW', 'RWF', 'RM'],
-        'LW': ['LW', 'LWF', 'LM'],
-        'RB': ['RB', 'RWB'],
-        'LB': ['LB', 'LWB']
+        'ST': ['ST'],
+        'RW': ['RW'],
+        'LW': ['LW'],
+        'RB': ['RB'],
+        'LB': ['LB']
     };
 
     // Fetch players data from time.json
@@ -52,6 +52,12 @@ document.addEventListener('DOMContentLoaded', () => {
             loadSelectedTeam();
         })
         .catch(error => console.error('Error loading players:', error));
+
+        // let numbers =[1,2,3];
+
+        // const n = numbers.map(x*2);
+
+        // console.log(n);
 
 
    
@@ -189,7 +195,12 @@ document.addEventListener('DOMContentLoaded', () => {
             alert(`You can only select ${MAX_TEAM_SIZE} players!`);
             return;
         }
-    
+        
+        if (isPositionTaken(player.position)) {
+            alert(`You already have a player in a similar position to ${player.position}!`);
+            return;
+        }
+
         // Add player to team
         selectedPlayers.push(player);
         saveSelectedTeam();
@@ -241,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         positionToPlayerMap[desiredPosition] = playerForPosition;
                     }
                 }
-            });
+            }); 
         });
     
         fieldPositions.forEach((row, rowIndex) => {
@@ -601,3 +612,59 @@ confirmBtn.addEventListener('click', () => {
     }
 });
 })
+
+
+const cars = [
+    {
+        brand: "Toyota",
+        model: "Corolla",
+        year: 2020,
+        color: "White"
+    },
+    {
+        brand: "Honda",
+        model: "Civic",
+        year: 2019,
+        color: "Black"
+    },
+    {
+        brand: "Ford",
+        model: "Mustang",
+        year: 2021,
+        color: "Red"
+    },
+    {
+        brand: "Tesla",
+        model: "Model 3",
+        year: 2022,
+        color: "Blue"
+    },
+    {
+        brand: "BMW",
+        model: "X5",
+        year: 2019,
+        color: "Silver"
+    }
+];
+
+// console.log(cars);
+
+const brand = cars.filter(p=> p.year > 2019);
+
+const years = [... new Set(cars.map(x=>x.year))].sort()
+
+console.log(years)
+
+cars.forEach(x=>{
+    console.log(x.brand)
+})  
+
+
+cars.forEach(x=>{
+    console.log()
+})
+console.log(brand)
+
+// for(let i=0; )
+
+
